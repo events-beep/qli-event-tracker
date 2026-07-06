@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#101B28">
+<title>QLI Event Countdown</title>
+<style>
+  :root {
+    --bg: #101B28;          /* deep navy, darkened for screens */
+    --bg-card: #1A2B3C;     /* QLI deep navy */
+    --bg-card-soft: #162432;
+    --orange: #E76F3D;      /* QLI orange */
+    --orange-soft: rgba(231, 111, 61, 0.15);
+    --cream: #FAF7F2;
+    --muted: #8FA1B3;
+    --green: #3DBC7C;
+    --green-soft: rgba(61, 188, 124, 0.15);
+    --red: #E4453A;
+    --red-soft: rgba(228, 69, 58, 0.16);
+    --line: #2A3D51;
+    --serif: "Didot", "Bodoni 72", "Playfair Display", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- Hero ---------- */
+  header {
+    text-align: center;
+    padding: 44px 20px 8px;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% -10%, rgba(231, 111, 61, 0.22), transparent 70%);
+  }
+
+  .kicker {
+    color: var(--orange);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(30px, 8vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .venue {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  .venue strong { color: var(--cream); font-weight: 600; }
+
+  /* ---------- Countdown ---------- */
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .cd-block {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 8px 12px;
+    flex: 1;
+    max-width: 130px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .cd-num {
+    font-family: var(--serif);
+    font-size: clamp(40px, 12vw, 62px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--orange);
+    font-variant-numeric: tabular-nums;
+    display: inline-block;
+  }
+
+  .cd-num.tick { animation: pop 0.45s ease; }
+  @keyframes pop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.16); }
+    100% { transform: scale(1); }
+  }
+
+  .cd-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .event-day-banner {
+    display: none;
+    font-family: var(--serif);
+    font-size: clamp(32px, 9vw, 48px);
+    color: var(--orange);
+    padding: 20px 0;
+    animation: pop 1.2s ease infinite;
+  }
+
+  /* ---------- Progress ---------- */
+  .progress-section { margin: 36px 0 8px; }
+
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .progress-head .title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .progress-head .pct {
+    font-family: var(--serif);
+    font-size: 26px;
+    color: var(--cream);
+  }
+
+  .progress-track {
+    height: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--orange), #F19A6B);
+    border-radius: 99px;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .progress-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ---------- Calendar ---------- */
+  .calendar-section { margin-top: 36px; }
+
+  .cal-card {
+    background: var(--bg-card-soft);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 14px 10px;
+  }
+
+  .cal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .cal-month {
+    font-family: var(--serif);
+    font-size: 19px;
+  }
+
+  .cal-nav {
+    display: flex;
+    gap: 8px;
+  }
+  .cal-nav button {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--cream);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .cal-nav button:active { background: var(--orange-soft); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+  }
+
+  .cal-dow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 4px 0 8px;
+  }
+
+  .cal-day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cal-day.dim { color: var(--muted); opacity: 0.35; }
+
+  .cal-day.today { border: 1px solid var(--muted); }
+
+  .cal-day.has-deadline { cursor: pointer; font-weight: 700; }
+  .cal-day.has-deadline:active { background: var(--orange-soft); }
+
+  .cal-dots {
+    display: flex;
+    gap: 3px;
+    margin-top: 3px;
+    height: 5px;
+  }
+  .cal-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .cal-dot.done     { background: var(--green); }
+  .cal-dot.overdue  { background: var(--red); }
+  .cal-dot.progress { background: var(--orange); }
+  .cal-dot.upcoming { background: var(--muted); }
+
+  .cal-day.event-day {
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+  }
+  .cal-day.event-day .cal-dot { background: #fff; }
+
+  .cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .cal-legend span { display: flex; align-items: center; gap: 5px; }
+  .cal-legend .cal-dot { flex-shrink: 0; }
+  .cal-legend .swatch-event {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--orange); flex-shrink: 0;
+  }
+
+  /* ---------- Timeline ---------- */
+  .timeline-section { margin-top: 36px; }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .stage {
+    position: relative;
+    background: var(--bg-card-soft);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--muted);
+    border: 3px solid var(--bg);
+  }
+
+  .stage.done::before    { background: var(--green); }
+  .stage.overdue::before { background: var(--red); }
+  .stage.upnext::before  { background: var(--orange); box-shadow: 0 0 0 4px var(--orange-soft); }
+
+  .stage.overdue {
+    border-color: var(--red);
+    background: var(--red-soft);
+  }
+
+  .stage.upnext {
+    border-color: var(--orange);
+    background: linear-gradient(180deg, var(--orange-soft), var(--bg-card-soft) 70%);
+    box-shadow: 0 6px 24px rgba(231, 111, 61, 0.18);
+  }
+
+  .stage.done { opacity: 0.72; }
+
+  .stage.flash { animation: flash-ring 1.6s ease; }
+  @keyframes flash-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(231, 111, 61, 0.9); }
+    60%  { box-shadow: 0 0 0 10px rgba(231, 111, 61, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 111, 61, 0); }
+  }
+
+  .upnext-tag {
+    display: inline-block;
+    background: var(--orange);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+
+  .stage-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .stage-name {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .stage.done .stage-name { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+  .pill {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+  .pill.done       { background: var(--green-soft); color: var(--green); }
+  .pill.overdue    { background: var(--red); color: #fff; animation: pulse-red 1.6s ease infinite; }
+  .pill.progress   { background: var(--orange-soft); color: var(--orange); }
+  .pill.upcoming   { background: var(--bg-card); color: var(--muted); border: 1px solid var(--line); }
+
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(228, 69, 58, 0.5); }
+    50%      { box-shadow: 0 0 0 7px rgba(228, 69, 58, 0); }
+  }
+
+  .stage-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .stage-meta strong { color: var(--cream); font-weight: 600; }
+  .stage-meta .days-left.urgent { color: var(--red); font-weight: 700; }
+  .stage-meta .days-left.soon   { color: var(--orange); font-weight: 700; }
+
+  /* ---------- Footer / error ---------- */
+  .updated {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 28px;
+  }
+
+  .error-banner {
+    display: none;
+    background: var(--red-soft);
+    border: 1px solid var(--red);
+    color: var(--cream);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Play for Good</div>
+  <h1 id="event-name">&nbsp;</h1>
+  <div class="venue" id="event-venue"></div>
+
+  <div class="countdown" id="countdown">
+    <div class="cd-block"><span class="cd-num" id="cd-days">–</span><div class="cd-label">Days</div></div>
+    <div class="cd-block"><span class="cd-num" id="cd-hours">–</span><div class="cd-label">Hours</div></div>
+    <div class="cd-block"><span class="cd-num" id="cd-mins">–</span><div class="cd-label">Mins</div></div>
+  </div>
+  <div class="event-day-banner" id="event-day-banner">It's event day.</div>
+</header>
+
+<main class="wrap">
+  <div class="error-banner" id="error-banner"></div>
+
+  <section class="progress-section" id="progress-section" hidden>
+    <div class="progress-head">
+      <span class="title">Stages complete</span>
+      <span class="pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-sub" id="progress-sub"></div>
+  </section>
+
+  <section class="calendar-section" id="calendar-section" hidden>
+    <h2>Deadline calendar</h2>
+    <div class="cal-card">
+      <div class="cal-head">
+        <span class="cal-month" id="cal-month"></span>
+        <div class="cal-nav">
+          <button id="cal-prev" aria-label="Previous month">‹</button>
+          <button id="cal-next" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <span><span class="swatch-event"></span>Event day</span>
+        <span><span class="cal-dot done"></span>Done</span>
+        <span><span class="cal-dot progress"></span>In progress</span>
+        <span><span class="cal-dot upcoming"></span>Upcoming</span>
+        <span><span class="cal-dot overdue"></span>Overdue</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="timeline-section" id="timeline-section" hidden>
+    <h2>Planning timeline</h2>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <div class="updated" id="updated"></div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA_URL = "events.json";           // relative path — works on GitHub Pages / Vercel
+  var REFRESH_MS = 5 * 60 * 1000;         // re-fetch data every 5 minutes
+  var MS_DAY = 24 * 60 * 60 * 1000;
+
+  var data = null;
+  var eventTime = null;                   // ms timestamp of event day, local midnight
+  var prev = { days: null, hours: null, mins: null };
+  var calItems = [];                      // classified stages, shared with the calendar
+  var calCursor = null;                   // { y, m } month currently shown
+
+  // Parse "YYYY-MM-DD" as LOCAL midnight (new Date("YYYY-MM-DD") would be UTC).
+  function parseDate(str) {
+    var p = str.split("-");
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+
+  function startOfToday() {
+    var n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+  }
+
+  function fmtDate(str) {
+    return parseDate(str).toLocaleDateString("en-HK", {
+      weekday: "short", day: "numeric", month: "short", year: "numeric"
+    });
+  }
+
+  function daysUntil(str) {
+    return Math.round((parseDate(str).getTime() - startOfToday()) / MS_DAY);
+  }
+
+  function setNum(id, val, key) {
+    var el = document.getElementById(id);
+    var text = String(val);
+    if (el.textContent !== text) {
+      el.textContent = text;
+      if (prev[key] !== null) {           // don't animate the very first paint
+        el.classList.remove("tick");
+        void el.offsetWidth;              // restart the animation
+        el.classList.add("tick");
+      }
+      prev[key] = val;
+    }
+  }
+
+  function renderCountdown() {
+    if (eventTime === null) return;
+    var diff = eventTime - Date.now();
+
+    if (diff <= 0) {
+      document.getElementById("countdown").style.display = "none";
+      document.getElementById("event-day-banner").style.display = "block";
+      return;
+    }
+    setNum("cd-days",  Math.floor(diff / MS_DAY), "days");
+    setNum("cd-hours", Math.floor(diff / 3600000) % 24, "hours");
+    setNum("cd-mins",  Math.floor(diff / 60000) % 60, "mins");
+  }
+
+  // Decide each stage's display state and find the single "up next" stage:
+  // the not-done stage with the earliest deadline that is today or later.
+  function classify(stages) {
+    var upNextIdx = -1, upNextDays = Infinity;
+    var out = stages.map(function (s, i) {
+      var d = daysUntil(s.deadline);
+      var state;
+      if (s.status === "done") state = "done";
+      else if (d < 0) state = "overdue";
+      else {
+        state = s.status === "in_progress" ? "progress" : "upcoming";
+        if (d < upNextDays) { upNextDays = d; upNextIdx = i; }
+      }
+      return { stage: s, days: d, state: state, index: i };
+    });
+    if (upNextIdx >= 0) out[upNextIdx].upNext = true;
+    return out;
+  }
+
+  function pillLabel(item) {
+    switch (item.state) {
+      case "done":     return "✓ Done";
+      case "overdue":  return "Overdue";
+      case "progress": return "In progress";
+      default:         return "Upcoming";
+    }
+  }
+
+  function daysLeftText(item) {
+    if (item.state === "done") return "";
+    if (item.days < 0)  return (-item.days) + (item.days === -1 ? " day" : " days") + " overdue";
+    if (item.days === 0) return "Due today";
+    return item.days + (item.days === 1 ? " day" : " days") + " left";
+  }
+
+  function esc(s) {
+    var d = document.createElement("div");
+    d.textContent = String(s);
+    return d.innerHTML;
+  }
+
+  function render() {
+    if (!data) return;
+
+    document.getElementById("event-name").textContent = data.eventName;
+    document.getElementById("event-venue").innerHTML =
+      "<strong>" + esc(data.venue) + "</strong> &middot; " + esc(fmtDate(data.eventDate));
+    document.title = data.eventName + " — Countdown";
+
+    var stages = data.stages || [];
+    var items = classify(stages);
+    calItems = items;
+    if (!calCursor) {
+      // Open the calendar on the most urgent month: the earliest not-done
+      // deadline (overdue included). If everything is done, show event month.
+      var urgent = items.filter(function (it) { return it.state !== "done"; })
+        .sort(function (a, b) { return a.stage.deadline < b.stage.deadline ? -1 : 1; })[0];
+      var focus = urgent ? parseDate(urgent.stage.deadline) : parseDate(data.eventDate);
+      calCursor = { y: focus.getFullYear(), m: focus.getMonth() };
+    }
+
+    // Progress
+    var done = stages.filter(function (s) { return s.status === "done"; }).length;
+    var pct = stages.length ? Math.round(done / stages.length * 100) : 0;
+    document.getElementById("progress-section").hidden = false;
+    document.getElementById("progress-pct").textContent = pct + "%";
+    document.getElementById("progress-fill").style.width = pct + "%";
+    document.getElementById("progress-sub").textContent =
+      done + " of " + stages.length + " stages done";
+
+    // Timeline
+    var html = items.map(function (item) {
+      var s = item.stage;
+      var cls = "stage " + item.state + (item.upNext ? " upnext" : "");
+      var dl = daysLeftText(item);
+      var dlCls = item.state === "overdue" ? "urgent" : (item.days <= 7 ? "soon" : "");
+      return '<div class="' + cls + '" id="stage-' + item.index + '">' +
+        (item.upNext ? '<span class="upnext-tag">Up next</span>' : "") +
+        '<div class="stage-top">' +
+          '<div class="stage-name">' + esc(s.name) + "</div>" +
+          '<span class="pill ' + item.state + '">' + pillLabel(item) + "</span>" +
+        "</div>" +
+        '<div class="stage-meta">' +
+          "<span>Deadline <strong>" + esc(fmtDate(s.deadline)) + "</strong></span>" +
+          "<span>Owner <strong>" + esc(s.owner) + "</strong></span>" +
+          (dl ? '<span class="days-left ' + dlCls + '">' + esc(dl) + "</span>" : "") +
+        "</div>" +
+      "</div>";
+    }).join("");
+
+    document.getElementById("timeline-section").hidden = false;
+    document.getElementById("timeline").innerHTML = html;
+
+    renderCalendar();
+
+    document.getElementById("updated").textContent =
+      "Updated " + new Date().toLocaleTimeString("en-HK", { hour: "2-digit", minute: "2-digit" }) +
+      " · refreshes every 5 min";
+  }
+
+  // ---------- Calendar ----------
+  var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var MONTHS = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+  function dateKey(y, m, d) {
+    return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  }
+
+  function renderCalendar() {
+    if (!data || !calCursor) return;
+    var y = calCursor.y, m = calCursor.m;
+
+    // Map "YYYY-MM-DD" -> stages due that day.
+    var byDate = {};
+    calItems.forEach(function (item) {
+      var k = item.stage.deadline;
+      (byDate[k] = byDate[k] || []).push(item);
+    });
+
+    var now = new Date();
+    var todayKey = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+    var eventKey = data.eventDate;
+
+    document.getElementById("cal-month").textContent = MONTHS[m] + " " + y;
+
+    var html = DOW.map(function (d) { return '<div class="cal-dow">' + d + "</div>"; }).join("");
+
+    var firstDow = new Date(y, m, 1).getDay();       // 0 = Sunday
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+    var daysInPrev = new Date(y, m, 0).getDate();
+
+    // Leading days from the previous month, dimmed.
+    for (var p = firstDow - 1; p >= 0; p--) {
+      html += '<div class="cal-day dim">' + (daysInPrev - p) + "</div>";
+    }
+
+    for (var d = 1; d <= daysInMonth; d++) {
+      var k = dateKey(y, m, d);
+      var due = byDate[k] || [];
+      var cls = "cal-day";
+      if (k === todayKey) cls += " today";
+      if (k === eventKey) cls += " event-day";
+      if (due.length) cls += " has-deadline";
+
+      var dots = due.slice(0, 3).map(function (item) {
+        return '<span class="cal-dot ' + item.state + '"></span>';
+      }).join("");
+
+      html += '<div class="' + cls + '"' +
+        (due.length ? ' data-stage="' + due[0].index + '" role="button" tabindex="0"' : "") +
+        ">" + d + '<div class="cal-dots">' + dots + "</div></div>";
+    }
+
+    document.getElementById("calendar-section").hidden = false;
+    document.getElementById("cal-grid").innerHTML = html;
+  }
+
+  function shiftMonth(delta) {
+    calCursor.m += delta;
+    if (calCursor.m < 0)  { calCursor.m = 11; calCursor.y--; }
+    if (calCursor.m > 11) { calCursor.m = 0;  calCursor.y++; }
+    renderCalendar();
+  }
+
+  document.getElementById("cal-prev").addEventListener("click", function () { shiftMonth(-1); });
+  document.getElementById("cal-next").addEventListener("click", function () { shiftMonth(1); });
+
+  // Tapping a marked date jumps to that stage's card in the timeline.
+  document.getElementById("cal-grid").addEventListener("click", function (e) {
+    var cell = e.target.closest("[data-stage]");
+    if (!cell) return;
+    var card = document.getElementById("stage-" + cell.getAttribute("data-stage"));
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.remove("flash");
+    void card.offsetWidth;                // restart the animation on repeat taps
+    card.classList.add("flash");
+  });
+
+  function showError(msg) {
+    var el = document.getElementById("error-banner");
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+
+  function load() {
+    fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (json) {
+        data = json;
+        eventTime = parseDate(data.eventDate).getTime();
+        document.getElementById("error-banner").style.display = "none";
+        render();
+        renderCountdown();
+      })
+      .catch(function (err) {
+        if (!data) {
+          showError("Couldn't load events.json (" + err.message + "). " +
+            "If you opened this file directly, serve it over HTTP instead — " +
+            "e.g. run: python3 -m http.server");
+        }
+        // If we already have data, keep showing it and retry on the next cycle.
+      });
+  }
+
+  load();
+  setInterval(load, REFRESH_MS);
+  setInterval(renderCountdown, 1000);
+
+  // Re-render statuses when the phone wakes the tab back up.
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) { renderCountdown(); render(); }
+  });
+})();
+</script>
+</body>
+</html>

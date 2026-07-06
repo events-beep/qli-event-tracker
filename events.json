@@ -1,0 +1,18 @@
+{
+  "eventName": "Play for Good: Fitness Festival",
+  "eventDate": "2026-11-15",
+  "venue": "AsiaWorld-Expo",
+  "stages": [
+    { "name": "Site inspection completed", "deadline": "2026-07-20", "owner": "Ken", "status": "in_progress" },
+    { "name": "Venue contract signed with AWE", "deadline": "2026-08-07", "owner": "Ken", "status": "not_started" },
+    { "name": "Insurance confirmed (public liability)", "deadline": "2026-08-21", "owner": "Dickson", "status": "not_started" },
+    { "name": "TPPE licence application submitted", "deadline": "2026-08-28", "owner": "Ken", "status": "not_started" },
+    { "name": "NGO partner & sponsors confirmed", "deadline": "2026-09-11", "owner": "Dickson", "status": "not_started" },
+    { "name": "Marketing & ticketing launch", "deadline": "2026-09-25", "owner": "Hannah", "status": "not_started" },
+    { "name": "Volunteer recruitment closed", "deadline": "2026-10-16", "owner": "Hannah", "status": "not_started" },
+    { "name": "TPPE licence granted", "deadline": "2026-10-23", "owner": "Ken", "status": "not_started" },
+    { "name": "Run sheet finalised & vendor briefings", "deadline": "2026-10-30", "owner": "Ken", "status": "not_started" },
+    { "name": "Full rehearsal / tech run", "deadline": "2026-11-13", "owner": "Dickson", "status": "not_started" },
+    { "name": "EVENT DAY — AsiaWorld-Expo", "deadline": "2026-11-15", "owner": "All", "status": "not_started" }
+  ]
+}
