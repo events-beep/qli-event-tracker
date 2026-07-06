@@ -11,7 +11,7 @@
 // every 15–30 minutes). It shows the event countdown, the next stage deadline
 // and its owner — and turns red if any stage is overdue.
 
-const EVENTS_JSON_URL = "PASTE_DEPLOYED_URL_HERE/events.json";
+const EVENTS_JSON_URL = "https://events-beep.github.io/qli-event-tracker/events.json";
 
 // ---- QLI palette ----
 const NAVY = new Color("#101B28");
