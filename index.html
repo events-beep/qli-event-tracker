@@ -404,6 +404,16 @@
     margin-top: 28px;
   }
 
+  .edit-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--orange);
+    text-decoration: none;
+  }
+  .edit-link:active { opacity: 0.7; }
+
   .error-banner {
     display: none;
     background: var(--red-soft);
@@ -471,6 +481,7 @@
   </section>
 
   <div class="updated" id="updated"></div>
+  <a class="edit-link" href="https://github.com/events-beep/qli-event-tracker/edit/main/events.json" target="_blank" rel="noopener">✎ Edit event data</a>
 </main>
 
 <script>
