@@ -3,8 +3,8 @@
   "eventDate": "2026-11-15",
   "venue": "AsiaWorld-Expo",
   "stages": [
-    { "name": "Site inspection completed", "deadline": "2026-07-20", "owner": "Ken", "status": "in_progress" },
-    { "name": "Venue contract signed with AWE", "deadline": "2026-08-07", "owner": "Ken", "status": "not_started" },
+    { "name": "Site inspection completed", "deadline": "2026-07-08", "owner": "Man", "status": "in_progress" },
+    { "name": "Venue contract signed with AWE", "deadline": "2026-08-07", "owner": "Man", "status": "not_started" },
     { "name": "Insurance confirmed (public liability)", "deadline": "2026-08-21", "owner": "Dickson", "status": "not_started" },
     { "name": "TPPE licence application submitted", "deadline": "2026-08-28", "owner": "Ken", "status": "not_started" },
     { "name": "NGO partner & sponsors confirmed", "deadline": "2026-09-11", "owner": "Dickson", "status": "not_started" },
